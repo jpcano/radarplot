@@ -2,17 +2,17 @@
 
 A library to read the CIKM AnalaytiCup 2017 dataset.
 
-radarplot is a library intended to read efficiently the dataset released for the CIKM AnalytiCup 2017 competiton (`train.txt`) and map it to Python objects. The dataset `train.txt` is 17.1 GB but this library takes `O(1)` to read any of the 10000 radar sequences in the dataset. The information of the different Stacks and Layers of each sequence are easyly accesible from the Radar object (and plotable).
+radarplot is a library intended to read efficiently the dataset released for the CIKM AnalytiCup 2017 competiton (`train.txt`) and map it to Python objects. The dataset `train.txt` is 17.1 GB long but this library takes `O(1)` to read any of the 600,000 radar maps in the dataset. The information of the different Stacks and Layers of each sequence are easily accesible in the Radar object (all the structure within Radar object can be visualized in a plot).
 
 Installation
 ------------
 
-This library is not published in pip platform so if you want to install it in you own system you can do the following:
+This library is not published in the pip platform, so if you want to install you can do it manually following these steps:
 
 ```shell
 git clone https://github.com/jpcano/radarplot.git
 cd radarplot
-pip pip3 install .
+pip3 install -e .
 ```
 
 Quick Guide
@@ -62,12 +62,12 @@ for radar in cikm.getAllRadars(sorted=True, reversed=True):
 
 ### Notes
 
-The first time that tyhe CIKM constructor is executed will take some time to generate the index file train.index.
-The next calls to that constructor will detect the index file and it will use it to speed up the random access to the images.
+The first time that the CIKM constructor is called it will take some time to generate the file `train.index`.
+The next calls to that constructor will detect the index file and they will use it to speed up the random access to the images.
 
 ### More examples
 
-You can have a look to the project [radarweb](https://github.com/jpcano/radarweb). It implements a client that uses this library to generate this [web](http://jesus.engineer/radarweb).
+You can have a look at the project [radarweb](https://github.com/jpcano/radarweb). It implements a client that uses this library to generate this [web](http://jesus.engineer/radarweb).
 
 Tests
 -----
@@ -81,9 +81,9 @@ make test
 TODO
 ----
 
+- Autogenerate the API docummentation.
 - Continuous Integration with Travis.
 - Integrate codecov.io with Travis for automatic test coverage reports.
-- Autogenerate the API docummentation.
 
 License
 -------
