@@ -60,11 +60,14 @@ for radar in cikm.getAllRadars(sorted=True, reversed=True):
 	radar.plot('vid/' + radar.getID() + '.mp4')
 ```
 
-Notes
------
+### Notes
 
 The first time that tyhe CIKM constructor is executed will take some time to generate the index file train.index.
 The next calls to that constructor will detect the index file and it will use it to speed up the random access to the images.
+
+### More examples
+
+You can have a look to the project [radarweb](https://github.com/jpcano/radarweb). It implements a client that uses this library to generate this [web](http://jesus.engineer/radarweb).
 
 Tests
 -----
