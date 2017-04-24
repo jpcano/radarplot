@@ -7,11 +7,7 @@ Module to read the dataset and map the data to objects
 from radarplot.radartypes import *
 import json
 import os.path
-
-def chunks(n, l):
-    """Yield successive n-sized chunks from l."""
-    for i in range(0, len(l), n):
-        yield l[i:i + n]
+import numpy as np
 
 class CIKM (object):
     """Abstract class for reading the dataset and mapping to objets"""
@@ -92,7 +88,7 @@ class CIKM (object):
     def _getLayerData(self, rawlayer):
         """Returns 2D array ([[row0], [row1], ..., [rowN]] from rawlayer 
         which has the format [row0row1...rowN]."""
-        return list(chunks(self.mapdim, rawlayer))
+        return rawlayer.reshape(-1, self.mapdim)
 
     def getSize(self):
         """Returns the number of target maps in the dataset"""
@@ -125,7 +121,7 @@ class CIKM (object):
             radar = Radar(idmap, label)
             stackn = 0
             stack = RadarStack(radar, stackn)
-            for i, l in enumerate(chunks(self.radarslots, radardata)):
+            for i, l in enumerate(np.uint8(radardata).reshape(-1, self.radarslots)):
                 layern = i % self.nlayers
                 layer = RadarLayer(self._getLayerData(l), radar, stackn, layern)
                 stack.addLayer(layer)

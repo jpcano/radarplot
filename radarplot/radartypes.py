@@ -6,7 +6,8 @@ Module that contains the types of the dataset
 
 import pylab as plt
 import matplotlib.animation as animation
-
+import numpy as np
+                
 class Plot (object):
     """Abstract class for common plot actions."""
     def __init__(self, ID, label):
@@ -104,6 +105,16 @@ class Radar (Plot):
         self.getStack(7).putThumbnail()
         self.draw(filename)
 
+    def getAllLayerFeatures(self):
+        features = []
+        nlayers = self.getStack(0).getSize()
+        for l in range(0, nlayers):
+            for s in self.getAllStacks():
+                features.append(s.getLayer(l).getDataFlatten())
+        features = np.array(features)
+        return features.reshape(1, -1)[0]
+
+    
 class RadarStack (Plot):
     """Abstract class to store the layers of a stack."""
 
@@ -181,6 +192,9 @@ class RadarLayer (Plot):
     def getData(self):
         """Returns a coy of the 2d array that represents the layer."""
         return self.data[:]
+
+    def getDataFlatten(self):
+        return self.getData().reshape(1, -1)[0]
     
     def getValue(self, x, y):
         """Get a specific value at (x, y) in the layer."""
