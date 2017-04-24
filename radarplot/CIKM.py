@@ -54,6 +54,16 @@ class CIKM (object):
                 yield [float(label), p]
                 p += len(line)
 
+    def __getFirst64(self, n, sorted, reversed):
+        """Return the first 64 charaters of the line n of the file `filename'."""
+        with open(self.filename) as f:
+            index = self.getSize()-n-1 if reversed else n
+            if(sorted):
+                    f.seek(self.sorted_index[index][1])
+            else:
+                f.seek(self.index[index][1])
+            return f.read(64)
+        
     def __getLine(self, n, sorted, reversed):
         """Return the line n of the file `filename'. It uses an iterator
         (enumerate) so during the search it only loads into memory one 
@@ -66,8 +76,14 @@ class CIKM (object):
                 f.seek(self.index[index][1])
             return f.readline()
 
+    def __getIdLabel(self, n, sorted, reversed):
+        """Returns a tuple with the information: (id, label)
+        where radarmap is a list of numbers in the format define of the spec"""
+        rawmap =  self.__getFirst64(n, sorted, reversed).split(',')
+        return (rawmap[0], float(rawmap[1]))
+
     def __getRawMap(self, n, sorted, reversed):
-        """Returns a tuple with the map information: (id, lable, radarmap)
+        """Returns a tuple with the map information: (id, label, radarmap)
         where radarmap is a list of numbers in the format define of the spec"""
         rawmap =  self.__getLine(n, sorted, reversed).split(',')
         dbz = [int(x) for x in rawmap[2].split()]
@@ -84,7 +100,24 @@ class CIKM (object):
 
     def getMapDimension(self):
         return self.mapdim
-        
+
+    def getIdLabelRange(self, ini, end, sorted=False, reversed=False):
+        """Yields a tuple (idmap, label) sucessively between ini and end."""
+        for idx in range(ini, end):
+            (idmap, label) = self.__getIdLabel(idx, sorted, reversed)
+            yield (idmap, label)
+
+    def getIdLabel(self, idx, sorted=False, reversed=False):
+        """Returns a tuple (idmap. label) in the index idx positon in the 
+        dataset"""
+        return list(self.getRadarRange(idx, idx + 1, sorted, reversed))[0]
+
+    def getAllIdLabels(self, sorted=False, reversed=False):
+        """Yield sucessively all the tuples (idmap, label) objects in the 
+        dataset"""
+        for radar in self.getRadarRange(0, self.getSize(), sorted, reversed):
+            yield radar
+    
     def getRadarRange(self, ini, end, sorted=False, reversed=False):
         """Yields a Radar object sucessively between ini and end."""
         for idx in range(ini, end):
