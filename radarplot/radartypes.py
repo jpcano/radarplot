@@ -67,6 +67,9 @@ class Radar (Plot):
         """Returna list with all the stacks."""
         return self.stacks
 
+    def getStackRange(self, a, b):
+        return self.stacks[a:b]
+                        
     def getSize(self):
         """Returns the number of stacks in the Radar object."""
         return len(self.stacks)
@@ -105,15 +108,22 @@ class Radar (Plot):
         self.getStack(7).putThumbnail()
         self.draw(filename)
 
-    def getAllLayerFeatures(self):
+    def getLastStacksFeatures(self, n): 
+        """Return a numpy array with the shape: (dim*dim*nlayers*n,).
+        Where n is the number of last stacks to return."""
         features = []
         nlayers = self.getStack(0).getSize()
-        for l in range(0, nlayers):
-            for s in self.getAllStacks():
+        nstacks = self.getSize()
+        for s in self.getStackRange(nstacks-n, nstacks):
+            for l in range(0, nlayers):
                 features.append(s.getLayer(l).getDataFlatten())
         features = np.array(features)
         return features.reshape(1, -1)[0]
 
+    def getAllFeatures(self):
+        """Return a numpy array with the shape: (dim*dim*nlayers*nstacks,)."""
+        nstacks = self.getSize()
+        return self.getLastStacksFeatures(nstacks)
     
 class RadarStack (Plot):
     """Abstract class to store the layers of a stack."""
@@ -178,6 +188,11 @@ class RadarLayer (Plot):
     """Abstract class to stores the dBZ values of the map grid."""
 
     def __init__(self, data, radar, stackn, layern):
+        """data: numpy array [[row0], [row1], ..., [rowN]].
+           radar: Radar object where this belongs.
+           stackn: stack number where this belongs.
+           layern: layer number where this belongs.
+        """
         self.data = data
         self.radar = radar
         self.stackn = stackn
@@ -194,6 +209,7 @@ class RadarLayer (Plot):
         return self.data[:]
 
     def getDataFlatten(self):
+        """Returns a numpy array: [row0row1...rowN]"""
         return self.getData().reshape(1, -1)[0]
     
     def getValue(self, x, y):

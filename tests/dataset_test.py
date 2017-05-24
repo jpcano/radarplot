@@ -2,6 +2,7 @@
 
 import unittest
 import context
+import numpy as np
 from CIKM import *
 
 filename = 'data/data_sample.txt'
@@ -60,6 +61,30 @@ class TestSuite(unittest.TestCase):
         radar = cikm.getRadar(last)
         self.assertEqual(self.getMapData(filename, last),
                          self.flatten(cikm, radar))
+
+    def test_lastFeatures(self):
+        """Test if we have mapped correctly the last features"""
+        loc = 1
+        radar = cikm.getRadar(loc)
+        nstacks = cikm.nticks
+        nlayers = cikm.nlayers
+        radarslots = cikm.radarslots
+        last = 3
+        bypass = (nstacks-last)*nlayers*radarslots
+        mapdata = self.getMapData(filename, loc)[bypass:]
+        mapdata2 = radar.getLastStacksFeatures(last).tolist()
+        self.assertEqual(mapdata, mapdata2)
+
+    def test_allFeatures(self):
+        """Test if we have mapped correctly all the features"""
+        loc = 1
+        radar = cikm.getRadar(loc)
+        nstacks = cikm.nticks
+        nlayers = cikm.nlayers
+        radarslots = cikm.radarslots
+        mapdata = self.getMapData(filename, loc)
+        mapdata2 = radar.getAllFeatures().tolist()
+        self.assertEqual(mapdata, mapdata2)
 
 if __name__ == '__main__':
     unittest.main()
